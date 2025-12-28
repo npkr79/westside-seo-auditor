@@ -1,0 +1,57 @@
+name: 🚀 Daily SEO Audit → Email Cursor Prompts
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 6AM IST daily
+  workflow_dispatch:  # Manual "Run" button
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4 pandas openai google-search-results-serpapi lxml
+    
+    - name: Run SEO Audit
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
+      run: python seo_auditor.py
+    
+    - name: Create HTML Report
+      run: |
+        echo '<h1>🚀 Westside SEO Audit Results</h1>' > priority_seo_fixes.html
+        echo '<p><strong>Generated:</strong> $(date)</p>' >> priority_seo_fixes.html
+        echo '<h2>Top Priority Pages:</h2>' >> priority_seo_fixes.html
+        if [ -f priority_seo_fixes.csv ]; then
+          python -c "
+import pandas as pd
+df = pd.read_csv('priority_seo_fixes.csv')
+html = df[['url', 'keyword']].to_html()
+with open('priority_seo_fixes.html', 'a') as f:
+    f.write(html)
+          "
+        fi
+    
+    - name: Send Email Results
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "🚀 Westside SEO Audit - $(date '+%Y-%m-%d') | ${{ github.run_number }} Fixes Ready"
+        to: npkr79@gmail.com
+        from: Westside SEO Bot <npkr79@gmail.com>
+        body: file://priority_seo_fixes.html
+        attachments: |
+          priority_seo_fixes.csv
+          priority_seo_fixes.html
+        secure: true
+        ignore_cert: true
