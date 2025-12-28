@@ -1,7 +1,7 @@
 name: 🚀 Daily SEO Audit
 on:
   schedule:
-    - cron: '0 6 * * *'  # 6AM IST daily
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,18 +16,14 @@ jobs:
         python-version: '3.11'
     
     - name: Install packages
-      run: |
-        pip install requests beautifulsoup4 pandas lxml
+      run: pip install requests beautifulsoup4 pandas lxml
     
     - name: Run SEO Audit
-      env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: python seo_auditor.py
     
     - name: Upload Results
       uses: actions/upload-artifact@v4
       with:
-        name: seo-results-${{ github.run_number }}
+        name: seo-results
         path: |
           priority_seo_fixes.*
-          *.html
