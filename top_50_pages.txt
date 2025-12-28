@@ -1,59 +1,50 @@
-Here are your **Top 50 Priority URLs**:
-
-**Core Pages**
-1. https://www.westsiderealty.in/
-2. https://www.westsiderealty.in/hyderabad
-3. https://www.westsiderealty.in/goa
-4. https://www.westsiderealty.in/blog
-5. https://www.westsiderealty.in/contact
-
-**Project Pages**
-6. https://www.westsiderealty.in/hyderabad/projects/aparna-zenon
-7. https://www.westsiderealty.in/hyderabad/projects/myscape-edition
-8. https://www.westsiderealty.in/hyderabad/projects/sumadhura-the-olympus
-9. https://www.westsiderealty.in/landing/godrej-regal-pavilion-rajendra-nagar-hyderabad
-10. https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-star
-11. https://www.westsiderealty.in/hyderabad/projects/aparna-amber-villas
-12. https://www.westsiderealty.in/landing/aerocidade-studio-apartments-dabolim
-13. https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-heights
-14. https://www.westsiderealty.in/hyderabad/projects/the-vue-residences
-15. https://www.westsiderealty.in/hyderabad/projects/jayabheri-the-nirvana
-16. https://www.westsiderealty.in/hyderabad/projects/aparna-luxor-park
-17. https://www.westsiderealty.in/hyderabad/projects/my-home-ankura
-18. https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-shine
-19. https://www.westsiderealty.in/hyderabad/projects/hallmark-treasor-kokapet-hyderabad
-20. https://www.westsiderealty.in/hyderabad/projects/anvita-high9-tellapur-hyderabad
-21. https://www.westsiderealty.in/hyderabad/projects/rajapushpa-aurelia-tellapur-hyderabad
-22. https://www.westsiderealty.in/hyderabad/projects/aparna-newlands-tellapur-hyderabad
-23. https://www.westsiderealty.in/hyderabad/projects/rajapushpa-imperia-tellapur-hyderabad
-24. https://www.westsiderealty.in/hyderabad/projects/my-home-tridasa-tellapur-hyderabad
-25. https://www.westsiderealty.in/hyderabad/projects/visions-arsha-tellapur-hyderabad
-26. https://www.westsiderealty.in/hyderabad/projects/vihaan-shikhara-tellapur-hyderabad
-27. https://www.westsiderealty.in/hyderabad/projects/vajra-west-city-tellapur-hyderabad
-28. https://www.westsiderealty.in/hyderabad/projects/supadha-gamya-tellapur-hyderabad
-29. https://www.westsiderealty.in/hyderabad/projects/eka-one-kokapet
-30. https://www.westsiderealty.in/hyderabad/projects/fortune-suraj-bhan-grande-kokapet-hyderabad
-
-**Micro-Market Pages**
-31. https://www.westsiderealty.in/hyderabad/narsingi
-32. https://www.westsiderealty.in/hyderabad/tukkuguda
-33. https://www.westsiderealty.in/hyderabad/kokapet
-34. https://www.westsiderealty.in/hyderabad/rajendra-nagar
-35. https://www.westsiderealty.in/hyderabad/hitech-city
-36. https://www.westsiderealty.in/hyderabad/budwel
-37. https://www.westsiderealty.in/hyderabad/manikonda
-38. https://www.westsiderealty.in/hyderabad/nanakramguda
-39. https://www.westsiderealty.in/hyderabad/puppalaguda
-40. https://www.westsiderealty.in/hyderabad/tellapur
-41. https://www.westsiderealty.in/hyderabad/osman-nagar
-42. https://www.westsiderealty.in/hyderabad/neopolis
-43. https://www.westsiderealty.in/hyderabad/gopanpally
-44. https://www.westsiderealty.in/hyderabad/mokila
-45. https://www.westsiderealty.in/hyderabad/nallagandla
-
-**Featured Listings**
-46. https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-sale-myscape-edition-financial-district
-47. https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-for-sale-in-trendset-insperia-banjara-hills
-48. https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-for-sale-in-cybercity-westbrook-kokapet
-49. https://www.westsiderealty.in/goa/buy/aerocidade-studio-apartments-dabolim
-50. https://www.westsiderealty.in/dubai/buy/6bhk-villa-dubai-141-18-crore-dubai
+https://www.westsiderealty.in/
+https://www.westsiderealty.in/hyderabad
+https://www.westsiderealty.in/goa
+https://www.westsiderealty.in/blog
+https://www.westsiderealty.in/contact
+https://www.westsiderealty.in/hyderabad/projects/aparna-zenon
+https://www.westsiderealty.in/hyderabad/projects/myscape-edition
+https://www.westsiderealty.in/hyderabad/projects/sumadhura-the-olympus
+https://www.westsiderealty.in/landing/godrej-regal-pavilion-rajendra-nagar-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-star
+https://www.westsiderealty.in/hyderabad/projects/aparna-amber-villas
+https://www.westsiderealty.in/landing/aerocidade-studio-apartments-dabolim
+https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-heights
+https://www.westsiderealty.in/hyderabad/projects/the-vue-residences
+https://www.westsiderealty.in/hyderabad/projects/jayabheri-the-nirvana
+https://www.westsiderealty.in/hyderabad/projects/aparna-luxor-park
+https://www.westsiderealty.in/hyderabad/projects/my-home-ankura
+https://www.westsiderealty.in/hyderabad/projects/aparna-cyber-shine
+https://www.westsiderealty.in/hyderabad/projects/hallmark-treasor-kokapet-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/anvita-high9-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/rajapushpa-aurelia-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/aparna-newlands-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/rajapushpa-imperia-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/my-home-tridasa-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/visions-arsha-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/vihaan-shikhara-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/vajra-west-city-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/supadha-gamya-tellapur-hyderabad
+https://www.westsiderealty.in/hyderabad/projects/eka-one-kokapet
+https://www.westsiderealty.in/hyderabad/projects/fortune-suraj-bhan-grande-kokapet-hyderabad
+https://www.westsiderealty.in/hyderabad/narsingi
+https://www.westsiderealty.in/hyderabad/tukkuguda
+https://www.westsiderealty.in/hyderabad/kokapet
+https://www.westsiderealty.in/hyderabad/rajendra-nagar
+https://www.westsiderealty.in/hyderabad/hitech-city
+https://www.westsiderealty.in/hyderabad/budwel
+https://www.westsiderealty.in/hyderabad/manikonda
+https://www.westsiderealty.in/hyderabad/nanakramguda
+https://www.westsiderealty.in/hyderabad/puppalaguda
+https://www.westsiderealty.in/hyderabad/tellapur
+https://www.westsiderealty.in/hyderabad/osman-nagar
+https://www.westsiderealty.in/hyderabad/neopolis
+https://www.westsiderealty.in/hyderabad/gopanpally
+https://www.westsiderealty.in/hyderabad/mokila
+https://www.westsiderealty.in/hyderabad/nallagandla
+https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-sale-myscape-edition-financial-district
+https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-for-sale-in-trendset-insperia-banjara-hills
+https://www.westsiderealty.in/hyderabad/buy/4bhk-apartment-for-sale-in-cybercity-westbrook-kokapet
+https://www.westsiderealty.in/goa/buy/aerocidade-studio-apartments-dabolim
+https://www.westsiderealty.in/dubai/buy/6bhk-villa-dubai-141-18-crore-dubai
