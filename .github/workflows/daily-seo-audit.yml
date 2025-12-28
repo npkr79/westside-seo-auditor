@@ -1,31 +1,20 @@
-name: AI SEO Phase 1
-
-on:
-  workflow_dispatch:        # manual run for now
-  # later you can add schedule:
-  # schedule:
-  #   - cron: '0 6 * * 1'   # every Monday 6AM IST
-
+name: AI SEO Pipeline Phase 1+2
+on: [workflow_dispatch]
 jobs:
-  phase1:
+  pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install deps
-        run: pip install requests beautifulsoup4 pandas google-generativeai
-
-      - name: Run Phase 1 sitemap categorizer
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python seo_pipeline_phase1.py
-
-      - name: Upload results
-        uses: actions/upload-artifact@v4
-        with:
-          name: seo-phase1-results
-          path: seo_phase1_categorized.csv
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - run: pip install requests beautifulsoup4 pandas google-generativeai
+    - run: python seo_pipeline_phase1.py
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: seo-phase1-2-results
+        path: |
+          seo_full_analysis.csv
+          seo_priority_fixes.csv
