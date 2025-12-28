@@ -1,81 +1,52 @@
 #!/usr/bin/env python3
-"""
-AI SEO Pipeline Phase 1 - SITEMAP + CATEGORIZATION
-"""
-
-import os
-import re
 import requests
+import re
 import json
 import pandas as pd
 from bs4 import BeautifulSoup
 import google.generativeai as genai
 
-print("🚀 Phase 1: Sitemap → Categorization")
+print("🚀 Phase 1 - SIMPLIFIED")
 
-# SETUP
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-pro")
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-pro')
 
-SITEMAP_URL = "https://www.westsiderealty.in/sitemap.xml"
+# HARDCODE YOUR 3 PAGES (NO SITEMAP)
+pages = [
+    "https://www.westsiderealty.in/hyderabad/neopolis",
+    "https://www.westsiderealty.in/landing/godrej-regal-pavilion-rajendra-nagar-hyderabad",
+    "https://www.westsiderealty.in/hyderabad/kokapet"
+]
 
-def fetch_sitemap(limit=10):
-    resp = requests.get(SITEMAP_URL)
-    urls = re.findall(r"<loc>(https://www\.westsiderealty\.in/[^<]+)</loc>", resp.text)
-    return urls[:limit]
-
-def get_page_data(url):
-    try:
-        r = requests.get(url, timeout=10)
-        soup = BeautifulSoup(r.content, 'html.parser')
-        title = soup.find('title')
-        title = title.text.strip()[:100] if title else ""
-        h1 = soup.find('h1')
-        h1 = h1.text.strip()[:100] if h1 else ""
-        text = soup.get_text()[:1000]
-        return title, h1, text, r.status_code
-    except:
-        return "", "", "", 0
-
-def categorize(url, title, h1, text):
-    prompt = f"""URL: {url}
-Title: {title}
-H1: {h1}
-Text: {text[:500]}
-
-Return JSON only:
-{{"category": "homepage|city-hub|micro-market|project|listing|blog|contact", "keyword": "primary keyword"}}"""
-    
-    try:
-        response = model.generate_content(prompt)
-        # Clean response
-        text = response.text.strip()
-        if '```
-            text = text.split('```')[1]
-        data = json.loads(text)
-        return data
-    except:
-        return {"category": "unknown", "keyword": ""}
-
-# MAIN
-urls = fetch_sitemap(5)
 results = []
-
-for i, url in enumerate(urls, 1):
-    print(f"[{i}/5] {url}")
-    title, h1, text, status = get_page_data(url)
-    cat = categorize(url, title, h1, text)
+for url in pages:
+    print(f"Analyzing: {url}")
+    
+    # Fetch page
+    r = requests.get(url, timeout=10)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    
+    title = soup.find('title')
+    title = title.text.strip()[:60] if title else "No title"
+    
+    h1 = soup.find('h1')
+    h1 = h1.text.strip()[:60] if h1 else "No H1"
+    
+    # Gemini categorize
+    prompt = f"URL: {url}\nTitle: {title}\nH1: {h1}\n\nCategory? (project/micro-market/blog):"
+    try:
+        resp = model.generate_content(prompt)
+        category = resp.text.strip()
+    except:
+        category = "unknown"
     
     results.append({
         'url': url,
         'title': title,
-        'status': status,
-        'category': cat.get('category', 'unknown'),
-        'keyword': cat.get('keyword', '')
+        'h1': h1,
+        'category': category
     })
 
 df = pd.DataFrame(results)
 df.to_csv('phase1_results.csv', index=False)
-
-print(f"\n✅ Phase 1 COMPLETE! {len(results)} pages")
-print("📥 Download: phase1_results.csv")
+print("✅ SAVED phase1_results.csv")
