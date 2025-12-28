@@ -1,0 +1,23 @@
+name: Phase 3 Complete Audit→Fix
+on: [workflow_dispatch]
+jobs:
+  phase3:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - run: pip install requests beautifulsoup4 pandas google-generativeai
+    - run: python seo_phase3_audit.py
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    - run: python seo_phase3_fixprompts.py
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: phase3-results
+        path: |
+          phase3_audits.csv
+          phase3_cursor_prompts.csv
