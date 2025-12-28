@@ -1,7 +1,7 @@
-name: Phase 1 Sitemap
+name: Phase 1 Simple
 on: [workflow_dispatch]
 jobs:
-  phase1:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -9,10 +9,8 @@ jobs:
       with:
         python-version: '3.11'
     - run: pip install requests beautifulsoup4 pandas google-generativeai
-    - run: python seo_pipeline_phase1.py
-      env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    - run: GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} python seo_simple_phase1.py
     - uses: actions/upload-artifact@v4
       with:
-        name: phase1-results
+        name: phase1-simple
         path: phase1_results.csv
