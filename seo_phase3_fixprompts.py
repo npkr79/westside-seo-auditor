@@ -1,83 +1,60 @@
 #!/usr/bin/env python3
 """
-PHASE 3.2 ULTRA-SIMPLE: Cursor Prompts ONLY (No Gemini!)
+PHASE 3.2: SITEMAP Cursor Prompts (Top 20 only)
 """
 
 import pandas as pd
 import re
 
-print("🚀 PHASE 3.2 - Cursor Prompts (100% WORKING!)")
+print("🚀 PHASE 3.2 - SITEMAP Cursor Prompts")
 
-# Read audits (Phase 3.1 success)
-df = pd.read_csv('phase3_audits.csv')
+# Process high + medium priority only
+high_df = pd.read_csv('phase3_high_priority.csv') if os.path.exists('phase3_high_priority.csv') else pd.DataFrame()
+medium_df = pd.read_csv('phase3_medium_priority.csv') if os.path.exists('phase3_medium_priority.csv') else pd.DataFrame()
+
+priority_pages = pd.concat([high_df, medium_df]).drop_duplicates('url').head(20)  # Top 20
 
 cursor_prompts = []
-for idx, row in df.iterrows():
-    url = row['url']
+for idx, row in priority_pages.iterrows():
     keyword = row['keyword']
-    audit = row['audit_report']
+    url = row['url']
     verdict = row['verdict']
+    word_count = row['word_count']
     
-    print(f"📝 {keyword[:30]} → {verdict[:30]}")
-    
-    # SMART CURSOR PROMPTS (No AI needed!)
-    if 'no changes required' in str(verdict).lower() or 'optimized' in str(verdict).lower():
-        prompt = f"""✅ {keyword} = PERFECT PAGE! 🎉
+    # MASTER CURSOR PROMPT TEMPLATE
+    prompt = f"""🎯 MASTER SEO FIX: {keyword}
 
 URL: {url}
-Verdict: "{verdict}"
+Word Count: {word_count}
+Verdict: {verdict}
 
-✅ Action: Submit to Google Search Console
-✅ Status: Monitor rankings (already elite!)"""
-        needs_fix = "NO"
-        
-    else:
-        # Extract fixes from audit
-        fixes = re.findall(r'\d+\.\s*([^\n]+)', audit)
-        fix_list = "\n".join(f"- {f.strip()}" for f in fixes[:5])
-        
-        prompt = f"""🎯 CURSOR AI: Optimize {keyword} for TOP Google rankings
+IMPLEMENT THESE CRITICAL FIXES:
+1. RealEstateListing JSON-LD schema (price range + RERA)
+2. RERA projects table (3-5 projects with IDs)  
+3. Price trends section (2025 Hyderabad data)
+4. FAQ schema (8+ questions)
+5. Long-tail H2: "{keyword} investment ROI 2026"
 
-URL: {url}
-AUDIT: {audit[:600]}...
-
-FIXES TO IMPLEMENT:
-{fix_list}
-
-TEMPLATE REQUIREMENTS:
-1. RealEstateListing JSON-LD schema (price range)
-2. RERA projects table  
-3. Price trends section (2025 data)
-4. Long-tail H2 headers (e.g. "{keyword} investment ROI")
-
-KEEP UNCHANGED:
-✅ Tailwind CSS styling
-✅ Hero image + CTAs  
+KEEP 100%:
+✅ Tailwind CSS + current design
+✅ Hero image + all CTAs  
 ✅ Mobile responsiveness
-✅ Current content structure
+✅ Existing content structure
 
-RETURN: COMPLETE Next.js page code ready to deploy."""
+File path: app/hyderabad/{keyword.lower().replace(' ', '-')}/page.tsx
 
-        needs_fix = "YES"
-    
+RETURN: COMPLETE Next.js page code ready-to-deploy."""
+
     cursor_prompts.append({
         'url': url,
         'keyword': keyword,
-        'verdict': verdict,
-        'needs_fix': needs_fix,
-        'priority': 'HIGH' if needs_fix == 'YES' else 'NONE',
-        'cursor_prompt': prompt[:2000]  # Truncate for CSV
+        'priority': row['needs_fix'],
+        'word_count': word_count,
+        'cursor_prompt': prompt
     })
 
-# SAVE FILES
 df_prompts = pd.DataFrame(cursor_prompts)
 df_prompts.to_csv('phase3_cursor_prompts.csv', index=False)
 
-# ONLY PAGES NEEDING FIXES
-needs_fix = df_prompts[df_prompts['needs_fix'] == 'YES']
-needs_fix.to_csv('phase3_fix_only.csv', index=False)
-
-print(f"\n🎉 SUCCESS!")
-print(f"📊 Total prompts: {len(cursor_prompts)}")
-print(f"🔥 Needs fix: {len(needs_fix)} → phase3_fix_only.csv")
-print(f"✅ Perfect: {len(df_prompts)-len(needs_fix)} pages")
+print(f"✅ TOP {len(cursor_prompts)} Cursor prompts ready!")
+print("📋 Copy from phase3_cursor_prompts.csv → Cursor AI!")
