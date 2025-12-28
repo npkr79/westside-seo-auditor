@@ -1,91 +1,83 @@
 #!/usr/bin/env python3
 """
-PHASE 3.2 FIXED: Cursor Prompts - BULLETPROOF
+PHASE 3.2 ULTRA-SIMPLE: Cursor Prompts ONLY (No Gemini!)
 """
 
 import pandas as pd
-import os
 import re
-import google.generativeai as genai
-import time
 
-print("🚀 PHASE 3.2 - Cursor Prompts (No Errors!)")
+print("🚀 PHASE 3.2 - Cursor Prompts (100% WORKING!)")
 
+# Read audits (Phase 3.1 success)
 df = pd.read_csv('phase3_audits.csv')
 
 cursor_prompts = []
-api_key = os.getenv("GEMINI_API_KEY")
-
 for idx, row in df.iterrows():
     url = row['url']
     keyword = row['keyword']
     audit = row['audit_report']
     verdict = row['verdict']
     
-    print(f"Generating prompt for {keyword[:30]}")
+    print(f"📝 {keyword[:30]} → {verdict[:30]}")
     
-    # SMART LOGIC - No Gemini if "optimized"
-    if 'no changes required' in verdict.lower() or 'optimized' in verdict.lower():
-        cursor_prompt = f"""✅ {keyword} PAGE PERFECT - NO ACTION NEEDED
+    # SMART CURSOR PROMPTS (No AI needed!)
+    if 'no changes required' in str(verdict).lower() or 'optimized' in str(verdict).lower():
+        prompt = f"""✅ {keyword} = PERFECT PAGE! 🎉
 
 URL: {url}
 Verdict: "{verdict}"
 
-Action: Submit to Google Search Console for fresh indexing.
-Status: MONITOR RANKINGS"""
+✅ Action: Submit to Google Search Console
+✅ Status: Monitor rankings (already elite!)"""
+        needs_fix = "NO"
         
     else:
-        # ONLY generate fix prompts for pages needing work
-        cursor_prompt = f"""🎯 CURSOR AI: Fix {keyword} page based on SEO audit
+        # Extract fixes from audit
+        fixes = re.findall(r'\d+\.\s*([^\n]+)', audit)
+        fix_list = "\n".join(f"- {f.strip()}" for f in fixes[:5])
+        
+        prompt = f"""🎯 CURSOR AI: Optimize {keyword} for TOP Google rankings
 
 URL: {url}
-AUDIT SUMMARY: {audit[:800]}...
+AUDIT: {audit[:600]}...
 
-IMPLEMENT EXACTLY from Fix List:
-{re.findall(r'\d+\.\s*([^\n]+)', audit)[:5]}
+FIXES TO IMPLEMENT:
+{fix_list}
 
-KEEP:
-✅ Tailwind CSS + luxury design  
-✅ Hero image + CTAs
-✅ Mobile responsiveness
-
-ADD:
-1. RealEstateListing JSON-LD schema
+TEMPLATE REQUIREMENTS:
+1. RealEstateListing JSON-LD schema (price range)
 2. RERA projects table  
-3. Price trends section
-4. Long-tail H2 headers
+3. Price trends section (2025 data)
+4. Long-tail H2 headers (e.g. "{keyword} investment ROI")
 
-RETURN COMPLETE Next.js page code."""
-    
-    # TRY Gemini code generation → FALLBACK to prompt only
-    generated_fix = "Prompt ready - paste to Cursor AI"
-    if api_key and 'no changes' not in verdict.lower():
-        try:
-            model = genai.GenerativeModel('gemini-1.5-flash')
-            resp = model.generate_content(cursor_prompt[:1500])  # Shorten prompt
-            generated_fix = resp.text[:1000] + "..."
-        except:
-            generated_fix = "Use prompt above in Cursor AI"
+KEEP UNCHANGED:
+✅ Tailwind CSS styling
+✅ Hero image + CTAs  
+✅ Mobile responsiveness
+✅ Current content structure
+
+RETURN: COMPLETE Next.js page code ready to deploy."""
+
+        needs_fix = "YES"
     
     cursor_prompts.append({
         'url': url,
         'keyword': keyword,
         'verdict': verdict,
-        'needs_fix': 'NO' if 'no changes' in verdict.lower() else 'YES',
-        'cursor_prompt': cursor_prompt,
-        'generated_fix': generated_fix
+        'needs_fix': needs_fix,
+        'priority': 'HIGH' if needs_fix == 'YES' else 'NONE',
+        'cursor_prompt': prompt[:2000]  # Truncate for CSV
     })
-    
-    print(f"   {row['verdict'][:40]}")
 
+# SAVE FILES
 df_prompts = pd.DataFrame(cursor_prompts)
-
-# SAVE ALL + FILTER NEEDS FIX
 df_prompts.to_csv('phase3_cursor_prompts.csv', index=False)
 
+# ONLY PAGES NEEDING FIXES
 needs_fix = df_prompts[df_prompts['needs_fix'] == 'YES']
 needs_fix.to_csv('phase3_fix_only.csv', index=False)
 
-print(f"\n✅ TOTAL: {len(cursor_prompts)} prompts")
-print(f"🔥 NEEDS FIX: {len(needs_fix)} pages → phase3_fix_only.csv")
-print(f"✅ PERFECT: {len(df_prompts) - len(needs_fix)} pages")
+print(f"\n🎉 SUCCESS!")
+print(f"📊 Total prompts: {len(cursor_prompts)}")
+print(f"🔥 Needs fix: {len(needs_fix)} → phase3_fix_only.csv")
+print(f"✅ Perfect: {len(df_prompts)-len(needs_fix)} pages")
