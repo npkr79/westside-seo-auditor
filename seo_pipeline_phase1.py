@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Phase 1 – Sitemap → 50 URLs → Category + Primary Keyword + Purpose (via Gemini)
-
-Output: seo_phase1_categorized.csv
+AI SEO Pipeline - PHASE 1+2 COMPLETE
+1. Sitemap → Categorize → Keywords
+2. Gemini finds competitors → Gap analysis → Cursor prompts
+NO SERPAPI NEEDED!
 """
 
 import os
@@ -15,132 +16,126 @@ import google.generativeai as genai
 SITE_ROOT = "https://www.westsiderealty.in"
 SITEMAP_URL = f"{SITE_ROOT}/sitemap.xml"
 
-# ------------- Gemini setup -------------
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-pro")
 
-
-def fetch_sitemap_urls(limit=50):
-    """Read sitemap.xml and return up to `limit` URLs."""
-    print(f"📥 Fetching sitemap: {SITEMAP_URL}")
+def fetch_sitemap_urls(limit=10):
+    """Get first N URLs from sitemap"""
     resp = requests.get(SITEMAP_URL, timeout=20)
-    resp.raise_for_status()
-    xml = resp.text
-
-    urls = re.findall(r"<loc>(.*?)</loc>", xml)
-    urls = [u.strip() for u in urls if u.strip().startswith(SITE_ROOT)]
-    urls = urls[:limit]
-    print(f"✅ Found {len(urls)} URLs from sitemap")
+    urls = re.findall(r"<loc>(.*?)</loc>", resp.text)
+    urls = [u.strip() for u in urls if u.strip().startswith(SITE_ROOT)][:limit]
+    print(f"✅ {len(urls)} URLs from sitemap")
     return urls
 
-
-def fetch_page_preview(url, max_chars=2000):
-    """Fetch HTML and return title, h1, and text preview."""
+def fetch_page_preview(url):
+    """Get page data for analysis"""
     try:
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        r = requests.get(url, headers=headers, timeout=20)
+        r = requests.get(url, headers=headers, timeout=15)
         soup = BeautifulSoup(r.content, "html.parser")
-
-        title_el = soup.find("title")
-        title = title_el.text.strip() if title_el else ""
-
-        h1_el = soup.find("h1")
-        h1 = h1_el.text.strip() if h1_el else ""
-
-        text = soup.get_text(" ", strip=True)[:max_chars]
-
+        
+        title = soup.find("title")
+        title = title.text.strip()[:100] if title else ""
+        
+        h1 = soup.find("h1")
+        h1 = h1.text.strip()[:100] if h1 else ""
+        
+        text = soup.get_text(" ", strip=True)[:1500]
+        
         return {
             "status": r.status_code,
             "title": title,
             "h1": h1,
             "preview": text,
         }
-    except Exception as e:
-        print(f"❌ Error fetching {url}: {e}")
+    except:
         return {"status": 0, "title": "", "h1": "", "preview": ""}
 
-
-def categorize_with_gemini(url, page):
-    """
-    Ask Gemini to:
-    - categorize page type
-    - infer primary keyword
-    - summarize page purpose
-    """
+def analyze_page(url, page_data):
+    """Gemini: Categorize + Keywords + Competitors + Gaps"""
     prompt = f"""
-You are an SEO strategist for a real-estate website.
-
-Analyze this page and return JSON only.
+REAL ESTATE SEO EXPERT MODE:
 
 URL: {url}
-TITLE: {page['title']}
-H1: {page['h1']}
-CONTENT PREVIEW:
-{page['preview'][:800]}
+Title: {page_data['title']}
+H1: {page_data['h1']}
+Content: {page_data['preview'][:1000]}
 
-TASKS:
-1) Choose ONE category from:
-   "homepage", "city-hub", "micro-market", "developer", "project",
-   "listing", "blog", "contact", "other"
+ANALYZE & RETURN JSON ONLY:
 
-2) Infer the primary search keyword this page should rank for.
-3) Describe the page purpose in 1 short sentence.
-
-Return STRICT JSON (no commentary), like:
 {{
-  "category": "micro-market",
-  "primary_keyword": "neopolis hyderabad apartments",
-  "purpose": "Neopolis micro-market overview with projects and prices"
+  "category": "micro-market|project|listing|city-hub|blog|homepage|contact",
+  "primary_keyword": "main search term this page targets",
+  "competitors": ["top competitor 1 URL", "top competitor 2 URL", "top competitor 3 URL"],
+  "strengths": ["what this page does well"],
+  "gaps": ["title too long", "missing FAQ schema", "add H2 sections"],
+  "cursor_prompt": "DETAILED 200-word prompt to fix this page in Cursor AI"
 }}
+
+Real estate examples:
+- Neopolis → category: "micro-market", keyword: "neopolis hyderabad apartments"
+- Godrej project → category: "project", keyword: "godrej regal pavilion price"
 """
+    
     try:
-        resp = model.generate_content(prompt)
-        text = resp.text.strip()
-        # remove code fences if present
-        if text.startswith("```
-            text = re.sub(r"^```(?:json)?", "", text, flags=re.IGNORECASE).strip()
-            text = re.sub(r"```
-        data = pd.io.json.loads(text)
-        return {
-            "category": data.get("category", "other"),
-            "primary_keyword": data.get("primary_keyword", "").strip(),
-            "purpose": data.get("purpose", "").strip(),
-        }
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+        # Clean JSON
+        text = re.sub(r"^```
+        text = re.sub(r"\s*```$", "", text, flags=re.DOTALL)
+        data = json.loads(text)
+        return data
     except Exception as e:
-        print(f"⚠️ Gemini parse error for {url}: {e}")
+        print(f"❌ Gemini error: {e}")
         return {
-            "category": "other",
+            "category": "unknown",
             "primary_keyword": "",
-            "purpose": "",
+            "competitors": [],
+            "strengths": [],
+            "gaps": ["analysis failed"],
+            "cursor_prompt": "Error - manual review needed"
         }
 
-
-def run_phase1(limit=50):
-    urls = fetch_sitemap_urls(limit=limit)
-
-    rows = []
-    for i, url in enumerate(urls, start=1):
-        print(f"\n[{i}/{len(urls)}] Analyzing {url}")
-        page = fetch_page_preview(url)
-        cat = categorize_with_gemini(url, page)
-
-        rows.append(
-            {
-                "url": url,
-                "status_code": page["status"],
-                "title": page["title"],
-                "h1": page["h1"],
-                "category": cat["category"],
-                "primary_keyword": cat["primary_keyword"],
-                "purpose": cat["purpose"],
-            }
-        )
-        print(f"   → {cat['category']} | {cat['primary_keyword']}")
-
-    df = pd.DataFrame(rows)
-    df.to_csv("seo_phase1_categorized.csv", index=False)
-    print("\n✅ Phase 1 complete → seo_phase1_categorized.csv created")
-
+def main():
+    print("🚀 PHASE 1+2: Sitemap → AI Analysis → Cursor Prompts")
+    
+    urls = fetch_sitemap_urls(limit=5)  # Start small
+    results = []
+    
+    for i, url in enumerate(urls, 1):
+        print(f"\n🔍 [{i}/5] {url}")
+        
+        page_data = fetch_page_preview(url)
+        analysis = analyze_page(url, page_data)
+        
+        results.append({
+            "url": url,
+            "status": page_data["status"],
+            "title": page_data["title"][:50],
+            "category": analysis.get("category", "unknown"),
+            "keyword": analysis.get("primary_keyword", ""),
+            "competitors": "; ".join(analysis.get("competitors", [])),
+            "strengths": "; ".join(analysis.get("strengths", [])),
+            "gaps": "; ".join(analysis.get("gaps", [])),
+            "cursor_prompt": analysis.get("cursor_prompt", "")[:500] + "..."
+        })
+        
+        print(f"   Category: {analysis.get('category')}")
+        print(f"   Keyword: {analysis.get('primary_keyword')}")
+        print(f"   Top competitor: {analysis.get('competitors', [''])[0] if analysis.get('competitors') else 'None'}")
+    
+    # SAVE MASTER RESULTS
+    df = pd.DataFrame(results)
+    df.to_csv("seo_full_analysis.csv", index=False)
+    
+    # PRIORITY FIXES ONLY
+    priority_df = df[df['gaps'].str.contains("missing|short|add|improve", case=False, na=False)]
+    priority_df.to_csv("seo_priority_fixes.csv", index=False)
+    
+    print(f"\n🎉 ANALYSIS COMPLETE!")
+    print(f"📊 Total: {len(results)} pages")
+    print(f"🔥 Priority fixes: {len(priority_df)} pages")
+    print("⬇️ Download: seo_full_analysis.csv + seo_priority_fixes.csv")
 
 if __name__ == "__main__":
-    run_phase1(limit=50)
+    main()
