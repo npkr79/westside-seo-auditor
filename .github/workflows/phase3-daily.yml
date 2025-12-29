@@ -1,34 +1,31 @@
 name: Daily SEO Audit (6AM IST)
 on:
   schedule:
-    # 6AM IST = 12:30AM UTC (5.5hr behind)
-    - cron: '30 0 * * *'  
-  workflow_dispatch:  # Manual run too
+    - cron: '30 0 * * *'  # 6AM IST
+  workflow_dispatch:
 
 jobs:
   seo-daily:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    - run: pip install requests beautifulsoup4 pandas
-    - run: python seo_phase3_audit.py
-      env:
-        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-    - run: python seo_phase3_fixprompts.py
+    
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4 pandas lxml
+    
+    - name: Run Phase 3 Audit
+      run: python seo_phase3_audit.py
+    
+    - name: Run Phase 3 Prompts
+      run: python seo_phase3_fixprompts.py
+    
     - uses: actions/upload-artifact@v4
       with:
-        name: daily-seo-${{ github.run_number }}
+        name: seo-results-${{ github.run_number }}
         path: |
           phase3_*.csv
         retention-days: 7
-    - name: Notify Slack/Discord (Optional)
-      if: always()
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#seo-automation'
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
