@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-PHASE 3 FULL SITEMAP: Process ALL 500+ pages
+PHASE 3 FULL SITEMAP - FIXED IMPORTS
 """
 
-import os
+import os  # ← FIXED #1
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # ← FIXED #2
 import pandas as pd
 import re
 import time
@@ -20,10 +20,9 @@ def get_all_urls():
     r = requests.get(SITEMAP_URL, timeout=15)
     soup = BeautifulSoup(r.content, 'xml')
     
-    # Extract ALL <loc> URLs
     urls = [loc.text for loc in soup.find_all('loc') if 'westsiderealty.in' in loc.text]
     
-    # Filter real estate pages (your priority pages)
+    # Filter real estate pages
     priority_patterns = [
         '/hyderabad/', '/landing/', '/properties/', '/godrej', '/neopolis', 
         '/kokapet', '/financial-district', '/gachibowli'
@@ -35,7 +34,7 @@ def get_all_urls():
             priority_urls.append(url)
     
     print(f"✅ Found {len(urls)} total | {len(priority_urls)} priority pages")
-    return priority_urls[:100]  # Top 100 to avoid timeout
+    return priority_urls[:100]  # Limit to avoid timeout
 
 def smart_auto_audit(url):
     """Smart audit for each page"""
@@ -47,14 +46,12 @@ def smart_auto_audit(url):
         text = soup.get_text()
         word_count = len(text.split())
         
-        # Extract keyword from URL
         keyword = url.split('/')[-1].replace('-', ' ').title()
         if '/hyderabad/' in url:
             keyword = url.split('/hyderabad/')[-1].split('/')[0].replace('-', ' ').title()
         
-        # SMART VERDICT LOGIC
         if word_count > 3000:
-            verdict = "Page is already optimized, no changes required."
+            verdict = "Page is already optimized"
             needs_fix = "NO"
         elif word_count > 1500:
             verdict = "Strong foundation - add schema"
@@ -70,12 +67,12 @@ def smart_auto_audit(url):
             'word_count': word_count,
             'verdict': verdict,
             'needs_fix': needs_fix,
-            'audit_report': f"Strengths: Perfect title ({len(title)} chars); {word_count} words\nFix List:\n1. RealEstateListing schema\n2. RERA table\nVerdict: {verdict}"
+            'audit_report': f"Title: {title}; Words: {word_count}; Verdict: {verdict}"
         }
-    except:
-        return {'url': url, 'keyword': 'ERROR', 'title': 'Error', 'word_count': 0, 'verdict': 'Error', 'needs_fix': 'ERROR'}
+    except Exception as e:
+        return {'url': url, 'keyword': 'ERROR', 'title': str(e), 'word_count': 0, 'verdict': 'Error', 'needs_fix': 'ERROR'}
 
-# MAIN PROCESSING
+# MAIN
 print("🔍 Analyzing sitemap pages...")
 all_pages = get_all_urls()
 results = []
@@ -84,23 +81,17 @@ for i, url in enumerate(all_pages, 1):
     print(f"[{i}/{len(all_pages)}] {url.split('/')[-1]}")
     result = smart_auto_audit(url)
     results.append(result)
-    time.sleep(0.5)  # Be nice to server
+    time.sleep(0.5)
 
-# SAVE RESULTS
 df = pd.DataFrame(results)
+df.to_csv('phase3_full_sitemap.csv', index=False)
 
-# PRIORITY FILTERS
 high_priority = df[df['needs_fix'] == 'HIGH'].head(10)
 medium_priority = df[df['needs_fix'] == 'MEDIUM'].head(10)
 no_action = df[df['needs_fix'] == 'NO']
 
-df.to_csv('phase3_full_sitemap.csv', index=False)
 high_priority.to_csv('phase3_high_priority.csv', index=False)
 medium_priority.to_csv('phase3_medium_priority.csv', index=False)
 no_action.to_csv('phase3_no_action.csv', index=False)
 
-print(f"\n🎉 FULL SITEMAP COMPLETE!")
-print(f"📊 Total pages: {len(df)}")
-print(f"🔥 HIGH priority: {len(high_priority)} → phase3_high_priority.csv")
-print(f"⚡ MEDIUM: {len(medium_priority)} → phase3_medium_priority.csv") 
-print(f"✅ Perfect: {len(no_action)} → phase3_no_action.csv")
+print(f"\n🎉 COMPLETE! {len(df)} pages → phase3_full_sitemap.csv")
